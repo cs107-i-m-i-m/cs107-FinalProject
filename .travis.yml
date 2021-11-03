@@ -1,0 +1,15 @@
+language: python
+python:
+    - "3.6"
+
+install:
+    pip install -r requirements.txt
+
+script:
+    - pytest -s --cov=nba_scraper test_unit.py
+
+env:
+    - CODECOV_TOKEN=fd7d4725-da34-4b72-b6b7-5b810a40dabe
+
+after_success:
+    - codecov
