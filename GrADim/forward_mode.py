@@ -40,6 +40,9 @@ class ForwardMode:
             return ForwardMode(self.value * other, self.derivative * other)
         return ForwardMode(other.value * self.value, other.derivative * self.value + other.value * other.derivative)
 
+    def __pow__(self, power, modulo=None):
+        return ForwardMode(self.value ** power, power * self.derivative * self.value ** (power-1))
+
     def __div__(self, other):
         if type(other) != self.__class__:
             return ForwardMode(self.value / other, self.derivative / other)
@@ -65,10 +68,10 @@ class ForwardMode:
 if __name__ == "__main__":
     X = ForwardMode(2)
     def f(x):
-        return -x*x + 2*x + 4
+        return -x**2 + 2*x + 4
 
     def g(x):
-        return ForwardMode.exp(x) + 2 * ForwardMode.sin(x) * ForwardMode.cos(x)
+        return ForwardMode.exp(x)**0.2 + 2 * ForwardMode.sin(x) * ForwardMode.cos(x)
 
     Y = f(X)
     print(Y.value)
