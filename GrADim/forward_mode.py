@@ -50,7 +50,7 @@ class ForwardMode:
 
     def __rtruediv__(self, other):
         if type(other) != self.__class__:
-            return ForwardMode(other / self.value, other / self.derivative)
+            return ForwardMode(other / self.value, - other * self.derivative / self.value**2)
         return ForwardMode(other.value / self.value, (self.value * other.derivative - self.derivative * other.value) / self.value ** 2)
 
     def exp(self):
