@@ -1,8 +1,8 @@
 import numpy as np
-import inspect
 
+from GrADim.GrADim import Gradim
 
-class ForwardMode:
+class ForwardMode(Gradim):
     def __init__(self, value, derivative=1):
         self.value = value
         self.derivative = derivative
