@@ -118,10 +118,10 @@ class ForwardMode(Gradim):
             xn = xn - e
             if e < eps:
                 print("The root found is: ", xn)
-                return eps
+                return xn
                 
-            print("Max epochs reached, the closest root value is: ", xn)
-            return eps
+        print("Max epochs reached, the closest root value is: ", xn)
+        return xn
 
 if __name__ == "__main__":
     X = ForwardMode(2)
