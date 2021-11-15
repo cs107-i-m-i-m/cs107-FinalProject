@@ -116,7 +116,7 @@ class ForwardMode(Gradim):
             y = fun(X)
             e = np.float(y.value) / np.float(y.derivative)
             xn = xn - e
-            if e < eps:
+            if abs(e) < eps:
                 print("The root found is: ", xn)
                 return xn
                 
@@ -126,7 +126,7 @@ class ForwardMode(Gradim):
 if __name__ == "__main__":
     X = ForwardMode(2)
     def f(x):
-        return -1+X
+        return x**2 - 2
     
 
     def g(x):
@@ -137,11 +137,21 @@ if __name__ == "__main__":
     print(Y.derivative)
 
     Y2 = g(X)
-    #print(Y2.value)
-    #print(Y2.derivative)
+    print(Y2.value)
+    print(Y2.derivative)
     
+
+    def f1(x):
+        return x**2 - 2*x + 1
     
+    def f2(x):
+        return x
+    
+    def f3(x):
+        return ForwardMode.exp(ForwardMode.sin(x))**0.2 + 2 * ForwardMode.sin(x) * ForwardMode.cos(x)
         
-    ForwardMode.Newton_Raphson(f,1,0.01,100)
+    ForwardMode.Newton_Raphson(f1,1.4,0.01,100)
+    ForwardMode.Newton_Raphson(f2,1.4,0.01,100)
+    ForwardMode.Newton_Raphson(f3,1.4,0.01,100)
             
         
