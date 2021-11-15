@@ -1,6 +1,6 @@
 import numpy as np
 
-from GrADim.GrADim import Gradim
+from GrADim import Gradim
 
 class ForwardMode(Gradim):
     
@@ -99,7 +99,7 @@ class ForwardMode(Gradim):
     def arccos(self):
         return ForwardMode(np.arccos(self.value), - self.derivative * (1/np.srt(1 - self.value**2)))
     
-    def arcssec(self):
+    def arcsec(self):
         return ForwardMode(np.arcsec(self.value), self.derivative * (1/np.srt(self.value**2 - 1)) * 1/np.abs(self.value))
     
     def arctan(self):
