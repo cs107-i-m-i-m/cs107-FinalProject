@@ -58,10 +58,13 @@ class ForwardMode(Gradim):
         return ForwardMode(other.value / self.value, (self.value * other.derivative - self.derivative * other.value) / self.value ** 2)
     
     def __abs__(self): #does the absolute affect the derivative too??
-        return ForwardMode(np.abs(self.value), self.derivative )
+        if self.value == 0:
+            raise ValueError("Cannot take derivative of abs at 0")
+        der = 1 *(self.value > 0) -1 * (self.value < 0)
+        return ForwardMode(np.abs(self.value), self.derivative  * der)
     
     def __sqrt__(self):
-        return ForwardMode(self.value ** 0.5, 0.5 * self.derivative * self.value ** (-0.5))
+        return self**0.5
         
     def exp(self):
         return ForwardMode(np.exp(self.value), self.derivative * np.exp(self.value))
@@ -105,10 +108,11 @@ class ForwardMode(Gradim):
     def arccot(self):
         return ForwardMode(np.arccot(self.value), - self.derivative * (1/(1 + self.value**2)))
     
+    @staticmethod
     def Newton_Raphson(fun,x0,eps,epochs):
         xn = x0
         for i in range(epochs):
-            X = ForwardMode(x0)
+            X = ForwardMode(xn)
             y = fun(X)
             e = np.float(y.value) / np.float(y.derivative)
             xn = xn - e
