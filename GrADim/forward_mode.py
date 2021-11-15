@@ -1,21 +1,27 @@
 import numpy as np
 
-from GrADim.GrADim import Gradim
+from GrADim import Gradim
 
 class ForwardMode(Gradim):
-    def __init__(self, value, derivative=1):
+    
+    #Initialize the value and derivative, if the derivative is not provided set it to 1. (Essentailly dual number Value + e derivative)
+    def __init__(self, value, derivative=1): 
         self.value = value
         self.derivative = derivative
-
+        
+    #For a single valued function, Jacobian is the derivative    
+    def __Jacobian__(self): 
+        return self.derivative
+    
+    #Check if the other object to add is a similar class object or just a constant, and handle them appropiately
+    
     def __add__(self, other):
         if type(other) != self.__class__:
             return ForwardMode(self.value + other, self.derivative)
         return ForwardMode(self.value + other.value, self.derivative + other.derivative)
 
     def __radd__(self, other):
-        if type(other) != self.__class__:
-            return ForwardMode(other + self.value, self.derivative)
-        return ForwardMode(other.value + self.value, other.derivative + self.derivative)
+        return self.__add__(other)
 
     def __neg__(self):
         return ForwardMode(-self.value, -self.derivative)
@@ -36,9 +42,7 @@ class ForwardMode(Gradim):
         return ForwardMode(self.value * other.value, self.derivative * other.value + self.value * other.derivative)
 
     def __rmul__(self, other):
-        if type(other) != self.__class__:
-            return ForwardMode(self.value * other, self.derivative * other)
-        return ForwardMode(other.value * self.value, other.derivative * self.value + other.value * other.derivative)
+        return self.__mul__(other)
 
     def __pow__(self, power, modulo=None):
         return ForwardMode(self.value ** power, power * self.derivative * self.value ** (power-1))
@@ -52,26 +56,81 @@ class ForwardMode(Gradim):
         if type(other) != self.__class__:
             return ForwardMode(other / self.value, - other * self.derivative / self.value**2)
         return ForwardMode(other.value / self.value, (self.value * other.derivative - self.derivative * other.value) / self.value ** 2)
-
+    
+    def __abs__(self): #does the absolute affect the derivative too??
+        if self.value == 0:
+            raise ValueError("Cannot take derivative of abs at 0")
+        der = 1 *(self.value > 0) -1 * (self.value < 0)
+        return ForwardMode(np.abs(self.value), self.derivative  * der)
+    
+    def __sqrt__(self):
+        return self**0.5
+        
     def exp(self):
         return ForwardMode(np.exp(self.value), self.derivative * np.exp(self.value))
 
     def sin(self):
         return ForwardMode(np.sin(self.value), self.derivative * np.cos(self.value))
+    
+    def cosec(self):
+        return 1 / self.sin(self)
 
     def cos(self):
         return ForwardMode(np.cos(self.value), - self.derivative * np.sin(self.value))
+    
+    def sec(self):
+        return 1 / self.cos(self)
 
     def tan(self):
         return ForwardMode(np.tan(self.value), self.derivative * (1 + np.tan(self.value)**2))
+    
+    def cot(self):
+        return 1 / self.tan(self)
+    
+    def log(self):
+        return ForwardMode(np.log(self.value), self.derivative * (1/self.value))
+    
+    def arcsin(self):
+        return ForwardMode(np.arcsin(self.value), self.derivative * (1/np.srt(1 - self.value**2)))
+    
+    def arccosec(self):
+        return ForwardMode(np.arccosec(self.value), - self.derivative * (1/np.srt(self.value**2 - 1)) * 1/np.abs(self.value))
+    
+    def arccos(self):
+        return ForwardMode(np.arccos(self.value), - self.derivative * (1/np.srt(1 - self.value**2)))
+    
+    def arcsec(self):
+        return ForwardMode(np.arcsec(self.value), self.derivative * (1/np.srt(self.value**2 - 1)) * 1/np.abs(self.value))
+    
+    def arctan(self):
+        return ForwardMode(np.arctan(self.value), self.derivative * (1/(1 + self.value**2)))
+    
+    def arccot(self):
+        return ForwardMode(np.arccot(self.value), - self.derivative * (1/(1 + self.value**2)))
+    
+    @staticmethod
+    def Newton_Raphson(fun,x0,eps,epochs):
+        xn = x0
+        for i in range(epochs):
+            X = ForwardMode(xn)
+            y = fun(X)
+            e = np.float(y.value) / np.float(y.derivative)
+            xn = xn - e
+            if abs(e) < eps:
+                print("The root found is: ", xn)
+                return xn
+                
+        print("Max epochs reached, the closest root value is: ", xn)
+        return xn
 
 if __name__ == "__main__":
     X = ForwardMode(2)
     def f(x):
-        return -x**2 + 2*x + 4/x
+        return x**2 - 2
+    
 
     def g(x):
-        return ForwardMode.exp(x)**0.2 + 2 * ForwardMode.sin(x) * ForwardMode.cos(x)
+        return ForwardMode.exp(ForwardMode.sin(x))**0.2 + 2 * ForwardMode.sin(x) * ForwardMode.cos(x)
 
     Y = f(X)
     print(Y.value)
@@ -80,3 +139,19 @@ if __name__ == "__main__":
     Y2 = g(X)
     print(Y2.value)
     print(Y2.derivative)
+    
+
+    def f1(x):
+        return x**2 - 2*x + 1
+    
+    def f2(x):
+        return x
+    
+    def f3(x):
+        return ForwardMode.exp(ForwardMode.sin(x))**0.2 + 2 * ForwardMode.sin(x) * ForwardMode.cos(x)
+        
+    ForwardMode.Newton_Raphson(f1,1.4,0.01,100)
+    ForwardMode.Newton_Raphson(f2,1.4,0.01,100)
+    ForwardMode.Newton_Raphson(f3,1.4,0.01,100)
+            
+        
