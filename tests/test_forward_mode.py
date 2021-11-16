@@ -4,7 +4,7 @@ from GrADim.forward_mode import *
 from GrADim.GrADim import *
 
 
-# Run using """python -m pytest tests/test_forward.py"""
+# Run using """python -m pytest tests/test_forward_mode.py"""
 class TestForwardMode:
     X = ForwardMode(2)
     float_equality_threshold = 1e-8
@@ -86,7 +86,7 @@ class TestForwardMode:
     def test_cosec(self):
         Y = Gradim.cosec(self.X)
         assert Y.value == 1 /np.sin(2)
-        assert Y.derivative == -1 * ((np.sin(2)) ** 2) * np.cos(2)
+        assert Y.derivative == -1 * np.cos(2) / ((np.sin(2))**2)
 
     def test_cos(self):
         Y = Gradim.cos(self.X)
@@ -125,12 +125,12 @@ class TestForwardMode:
 
     def test_arccos(self):
         Y = Gradim.arccos(self.X)
-        assert Y.value == np.arccos(2)
+        assert Y.value == np.acsc(2)
         assert Y.derivative == -1 / np.sqrt(1 - 2 ** 2)
 
     def test_arcsec(self):
         Y = Gradim.arcsec(self.X)
-        assert Y.value == np.arcsec(2)
+        assert Y.value == np.asec(2)
         assert Y.derivative == (1/np.sqrt(2**2 - 1)) * 1/np.abs(2)
 
     def test_arctan(self):
@@ -140,7 +140,7 @@ class TestForwardMode:
 
     def test_arccot(self):
         Y = Gradim.arccot(self.X)
-        assert Y.value == np.arccot(2)
+        assert Y.value == np.acot(2)
         assert Y.derivative == -1 / (1 + 2 ** 2)
 
     def test_complex_function(self):
