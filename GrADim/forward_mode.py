@@ -91,16 +91,16 @@ class ForwardMode(Gradim):
         return ForwardMode(np.log(self.value), self.derivative * (1/self.value))
     
     def arcsin(self):
-        return ForwardMode(np.arcsin(self.value), self.derivative * (1/np.srt(1 - self.value**2)))
+        return ForwardMode(np.arcsin(self.value), self.derivative * (1/np.sqrt(1 - self.value**2)))
     
     def arccosec(self):
-        return ForwardMode(np.arccosec(self.value), - self.derivative * (1/np.srt(self.value**2 - 1)) * 1/np.abs(self.value))
+        return ForwardMode(np.arccosec(self.value), - self.derivative * (1/np.sqrt(self.value**2 - 1)) * 1/np.abs(self.value))
     
     def arccos(self):
-        return ForwardMode(np.arccos(self.value), - self.derivative * (1/np.srt(1 - self.value**2)))
+        return ForwardMode(np.arccos(self.value), - self.derivative * (1/np.sqrt(1 - self.value**2)))
     
     def arcsec(self):
-        return ForwardMode(np.arcsec(self.value), self.derivative * (1/np.srt(self.value**2 - 1)) * 1/np.abs(self.value))
+        return ForwardMode(np.arcsec(self.value), self.derivative * (1/np.sqrt(self.value**2 - 1)) * 1/np.abs(self.value))
     
     def arctan(self):
         return ForwardMode(np.arctan(self.value), self.derivative * (1/(1 + self.value**2)))
