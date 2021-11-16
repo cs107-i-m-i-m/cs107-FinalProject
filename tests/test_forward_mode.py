@@ -69,7 +69,7 @@ class TestForwardMode:
         assert Y.derivative == 1
 
     def test_sqrt(self):
-        Y =  sqrt(self.X)
+        Y =  Gradim.sqrt(self.X)
         assert Y.value == 2 ** 0.5
         assert Y.derivative == 0.5 * 2 ** (-0.5)
 
