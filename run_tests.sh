@@ -16,3 +16,6 @@ export PYTHONPATH="$(pwd -P)/":${PYTHONPATH}
 
 # run the tests
 ${driver} ${tests[@]}
+
+# run the code coverage
+coverage report -m
