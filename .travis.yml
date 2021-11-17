@@ -8,3 +8,13 @@ script:
     - pytest --cov=./
 after_success:
     - bash <(curl -s https://codecov.io/bash) -t fd7d4725-da34-4b72-b6b7-5b810a40dabe
+
+before_install: python -m pip install build pytest pytest-cov  
+ # Run the tests defined in the package  
+script: (cd tests && ./run_tests.sh pytest --cov=GrADim --cov-report=xml) 
+
+# Upload the coverage report to codecov
+after_success:
+  - curl -Os https://uploader.codecov.io/latest/linux/codecov
+  - chmod +x codecov
+  - ./codecov -t ${fd7d4725-da34-4b72-b6b7-5b810a40dabe}
