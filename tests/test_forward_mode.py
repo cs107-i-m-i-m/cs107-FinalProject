@@ -96,7 +96,7 @@ class TestForwardMode:
     def test_sec(self):
         Y = Gradim.sec(self.X)
         assert Y.value == 1/np.cos(2)
-        assert Y.derivative == -1 * ((np.cos(2)) ** 2) * np.sin(2)
+        assert Y.derivative ==  1/np.cos(2) * np.tan(2)
 
     def test_tan(self):
         Y = Gradim.tan(self.X)
@@ -113,6 +113,11 @@ class TestForwardMode:
         assert Y.value == np.log(2)
         assert Y.derivative == 1/2
 
+    def test_abs(self):
+        Y = Gradim.abs(self.X)
+        assert Y.value == 2
+        assert Y.derivative == 1
+    '''
     def test_arcsin(self):
         Y = Gradim.arcsin(self.X)
         assert Y.value == np.arcsin(2)
@@ -142,10 +147,41 @@ class TestForwardMode:
         Y = Gradim.arccot(self.X)
         assert Y.value == np.acot(2)
         assert Y.derivative == -1 / (1 + 2 ** 2)
-
+    
     def test_complex_function(self):
         Y = Gradim.exp(self.X) * Gradim.sin(self.X) + Gradim.tan(self.X)/Gradim.sin(self.X)
         true_value = np.exp(2) * np.sin(2) + np.tan(2)/np.sin(2)
         true_derivative = np.exp(2) * (np.cos(2) + np.sin(2)) + np.sin(2)/(np.cos(2)**2)
         assert np.abs(Y.value - true_value) < self.float_equality_threshold
         assert np.abs(Y.derivative - true_derivative) < self.float_equality_threshold
+    '''
+    def test_polynomial(self):
+        Y = self.X**3 + self.X - 2
+        assert Y.value == 8
+        assert Y.derivative == 13
+
+    def test_trig(self):
+        Y = Gradim.cot(self.X) + 2 * Gradim.cosec(self.X) - Gradim.tan(self.X)
+        assert Y.value == 1/np.tan(2) + 2 / np.sin(2) - np.tan(2)
+        assert Y.derivative == -1/(np.sin(2)**2)-2/(np.tan(2)*np.sin(2))-1/(np.cos(2)**2)
+
+    def test_exp_sqrt(self):
+        Y = Gradim.sqrt(self.X) + 2 * self.X * Gradim.exp(self.X)
+        assert Y.value == np.sqrt(2) + 4 * np.exp(2)
+        assert Y.derivative == 1/(2 * np.sqrt(2)) + 6 * np.exp(2)
+
+    def test_trig_power(self):
+        Y = Gradim.sin(self.X) ** .2 - Gradim.cos(self.X) ** 3
+        assert Y.value == np.sin(2)** .2 - np.cos(2)** 3
+        assert Y.derivative == .2*(np.sin(2)**(-.8))*np.cos(2) + 3 * np.cos(2)** 2 * np.sin(2)
+
+    def test_inverse(self):
+        Y = 1/self.X + 2/(self.X**2)
+        assert Y.value == 1
+        assert Y.derivative == -3/4
+
+    def test_log_abs(self):
+        X = ForwardMode(-2)
+        Y = -3 * Gradim.log( 7 * Gradim.abs(self.X) )
+        assert Y.value == -3* np.log(14)
+        assert Y.derivative == -3/2
