@@ -1,7 +1,7 @@
 import numpy as np
 
-from GrADim.forward_mode import *
-from GrADim.GrADim import *
+from GrADim.forward_mode import ForwardMode
+from GrADim.GrADim import Gradim
 
 
 # Run using """python -m pytest tests/test_forward_mode.py"""
