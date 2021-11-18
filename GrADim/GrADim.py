@@ -1,9 +1,9 @@
 class Gradim:
     
-    def __abs__(self): 
+    def abs(self): 
         return self.__class__.abs(self)
     
-    def __sqrt__(self):
+    def sqrt(self):
         return self.__class__.sqrt(self)
         
     def exp(self):

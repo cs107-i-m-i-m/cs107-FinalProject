@@ -1,6 +1,6 @@
 import numpy as np
 
-from GrADim import Gradim
+from GrADim.GrADim import Gradim
 
 class ForwardMode(Gradim):
     
@@ -57,13 +57,13 @@ class ForwardMode(Gradim):
             return ForwardMode(other / self.value, - other * self.derivative / self.value**2)
         return ForwardMode(other.value / self.value, (self.value * other.derivative - self.derivative * other.value) / self.value ** 2)
     
-    def __abs__(self): #does the absolute affect the derivative too??
+    def abs(self): #does the absolute affect the derivative too??
         if self.value == 0:
             raise ValueError("Cannot take derivative of abs at 0")
         der = 1 *(self.value > 0) -1 * (self.value < 0)
         return ForwardMode(np.abs(self.value), self.derivative  * der)
     
-    def __sqrt__(self):
+    def sqrt(self):
         return self**0.5
         
     def exp(self):
@@ -73,23 +73,24 @@ class ForwardMode(Gradim):
         return ForwardMode(np.sin(self.value), self.derivative * np.cos(self.value))
     
     def cosec(self):
-        return 1 / self.sin(self)
+        return 1 / Gradim.sin(self)
 
     def cos(self):
         return ForwardMode(np.cos(self.value), - self.derivative * np.sin(self.value))
     
     def sec(self):
-        return 1 / self.cos(self)
+        return 1 / Gradim.cos(self)
 
     def tan(self):
         return ForwardMode(np.tan(self.value), self.derivative * (1 + np.tan(self.value)**2))
     
     def cot(self):
-        return 1 / self.tan(self)
+        return 1 / Gradim.tan(self)
     
     def log(self):
         return ForwardMode(np.log(self.value), self.derivative * (1/self.value))
     
+    '''
     def arcsin(self):
         return ForwardMode(np.arcsin(self.value), self.derivative * (1/np.sqrt(1 - self.value**2)))
     
@@ -101,13 +102,13 @@ class ForwardMode(Gradim):
     
     def arcsec(self):
         return ForwardMode(np.arcsec(self.value), self.derivative * (1/np.sqrt(self.value**2 - 1)) * 1/np.abs(self.value))
-    
+
     def arctan(self):
         return ForwardMode(np.arctan(self.value), self.derivative * (1/(1 + self.value**2)))
     
     def arccot(self):
         return ForwardMode(np.arccot(self.value), - self.derivative * (1/(1 + self.value**2)))
-    
+        
     @staticmethod
     def Newton_Raphson(fun,x0,eps,epochs):
         xn = x0
@@ -154,4 +155,4 @@ if __name__ == "__main__":
     ForwardMode.Newton_Raphson(f2,1.4,0.01,100)
     ForwardMode.Newton_Raphson(f3,1.4,0.01,100)
             
-        
+'''        
