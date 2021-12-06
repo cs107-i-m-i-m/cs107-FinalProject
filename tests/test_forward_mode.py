@@ -201,7 +201,6 @@ class TestForwardMode:
         def function_multiple_inputs(x):
             return Gradim.cos(x[0]) + Gradim.exp(x[2])*x[1]
         Y = function_multiple_inputs(self.multiple_X)
-        return Y.derivative
         assert Y.value == np.cos(1)+np.exp(3)*2
         assert (Y.derivative == np.array([-np.sin(1), np.exp(3), 2*np.exp(3)])).all()
 
