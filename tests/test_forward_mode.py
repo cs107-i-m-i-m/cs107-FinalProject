@@ -44,14 +44,11 @@ class TestForwardMode:
         assert Y.derivative == -1
 
     def test_sub_both(self):
-        Y = self.X2 - self.X
         def function_multiple_inputs(x):
             return x[1]-x[0]
-        Y2 = function_multiple_inputs(self.multiple_X)
-        assert Y.value == -3
-        assert Y.derivative == 0
-        assert Y2.value == 1
-        assert (Y2.derivative == np.array([-1,1,0])).all()
+        Y = function_multiple_inputs(self.multiple_X)
+        assert Y.value == 1
+        assert (Y.derivative == np.array([-1,1,0])).all()
     
     def test_mul_left(self):
         Y = self.X * 4
@@ -79,14 +76,11 @@ class TestForwardMode:
         assert Y.derivative == -1
 
     def test_truediv_both(self):
-        Y = self.X/self.X2
-        assert Y.value == -2
-        assert Y.derivative == -3
         def function_multiple_inputs(x):
             return x[1]/x[0]
-        Y2 = function_multiple_inputs(self.multiple_X)
-        assert Y2.value == 2
-        assert (Y2.derivative == np.array([-2,1,0])).all()
+        Y = function_multiple_inputs(self.multiple_X)
+        assert Y.value == 2
+        assert (Y.derivative == np.array([-2,1,0])).all()
 
     def test_sqrt(self):
         Y =  Gradim.sqrt(self.X)
