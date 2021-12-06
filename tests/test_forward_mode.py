@@ -8,6 +8,7 @@ from GrADim.GrADim import Gradim
 # Run using """python -m pytest tests/test_forward_mode.py"""
 class TestForwardMode:
     X = ForwardMode(2)
+    X2 = ForwardMode(-1)
     multiple_X = ForwardMode(np.array([1, 2, 3]))
 
     float_equality_threshold = 1e-8
@@ -41,6 +42,16 @@ class TestForwardMode:
         assert Y.value == 2
         assert Y.derivative == -1
 
+    def test_sub_both(self):
+        Y = self.X2 - self.X
+        def function_multiple_inputs(x):
+            return x[1]-x[0]
+        Y2 = function_multiple_inputs(self.multiple_X)
+        assert Y.value == -3
+        assert Y.derivative == 0
+        assert Y2.value == 1
+        assert (Y2.derivative == np.array([-1,1,0])).all()
+    
     def test_mul_left(self):
         Y = self.X * 4
         assert Y.value == 8
@@ -66,10 +77,25 @@ class TestForwardMode:
         assert Y.value == 2
         assert Y.derivative == -1
 
+    def test_truediv_both(self):
+        Y = self.X/self.X2
+        assert Y.value == -2
+        assert Y.derivative == -3
+        def function_multiple_inputs(x):
+            return x[1]/x[0]
+        Y2 = function_multiple_inputs(self.multiple_X)
+        assert Y2.value == 2
+        assert (Y2.derivative == np.array([-2,1,0])).all()
+
     def test_abs(self):
-        Y = abs(self.X)
+        Y = Gradim.abs(self.X)
         assert Y.value == 2
         assert Y.derivative == 1
+
+    def test_abs_neg(self):
+        Y = Gradim.abs(self.X2)
+        assert Y.value == 1
+        assert Y.derivative == -1
 
     def test_sqrt(self):
         Y =  Gradim.sqrt(self.X)
@@ -215,6 +241,7 @@ class TestForwardMode:
         Y = function_multiple_inputs_and_outputs(self.multiple_X)
         assert (Y.value == np.array([13, -2])).all()
         assert (Y.derivative == np.array([[1,6,4], [1,0,-1]])).all()
+
 
 if __name__=="__main__":
 	print("")
