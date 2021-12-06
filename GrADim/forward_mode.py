@@ -36,7 +36,7 @@ class ForwardMode(Gradim):
     def __rsub__(self, other):
         if type(other) != self.__class__:
             return ForwardMode(other - self.value, - self.derivative)
-        return ForwardMode(other.value - self.value, other.derivative - self.derivative)
+        #return ForwardMode(other.value - self.value, other.derivative - self.derivative)
 
     def __mul__(self, other):
         if type(other) != self.__class__:
@@ -57,11 +57,7 @@ class ForwardMode(Gradim):
     def __rtruediv__(self, other):
         if type(other) != self.__class__:
             return ForwardMode(other / self.value, - other * self.derivative / self.value**2)
-        return ForwardMode(other.value / self.value, (self.value * other.derivative - self.derivative * other.value) / self.value ** 2)
-    
-    def abs(self):
-        der = 1 *(self.value > 0) -1 * (self.value < 0)
-        return ForwardMode(np.abs(self.value), self.derivative  * der)
+        #return ForwardMode(other.value / self.value, (self.value * other.derivative - self.derivative * other.value) / self.value ** 2)
     
     def sqrt(self):
         return self**0.5

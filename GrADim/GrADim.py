@@ -1,8 +1,5 @@
 class Gradim:
     
-    def abs(self): 
-        return self.__class__.abs(self)
-    
     def sqrt(self):
         return self.__class__.sqrt(self)
         
