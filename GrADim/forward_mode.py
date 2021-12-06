@@ -104,26 +104,16 @@ class ForwardMode(Gradim):
             Y_derivatives = np.array([y.derivative for y in Y])
             return ForwardMode(Y_values, Y_derivatives)
         return wrapper
-    
-    '''
+
     def arcsin(self):
         return ForwardMode(np.arcsin(self.value), self.derivative * (1/np.sqrt(1 - self.value**2)))
     
-    def arccosec(self):
-        return ForwardMode(np.arccosec(self.value), - self.derivative * (1/np.sqrt(self.value**2 - 1)) * 1/np.abs(self.value))
-    
     def arccos(self):
         return ForwardMode(np.arccos(self.value), - self.derivative * (1/np.sqrt(1 - self.value**2)))
-    
-    def arcsec(self):
-        return ForwardMode(np.arcsec(self.value), self.derivative * (1/np.sqrt(self.value**2 - 1)) * 1/np.abs(self.value))
 
     def arctan(self):
         return ForwardMode(np.arctan(self.value), self.derivative * (1/(1 + self.value**2)))
-    
-    def arccot(self):
-        return ForwardMode(np.arccot(self.value), - self.derivative * (1/(1 + self.value**2)))
-        
+
     @staticmethod
     def Newton_Raphson(fun,x0,eps,epochs):
         xn = x0
@@ -138,7 +128,6 @@ class ForwardMode(Gradim):
                 
         print("Max epochs reached, the closest root value is: ", xn)
         return xn
-'''
 
 
 
