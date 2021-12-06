@@ -1,6 +1,6 @@
 import sys
 import numpy as np
-
+import pytest
 from GrADim.forward_mode import ForwardMode
 from GrADim.GrADim import Gradim
 
@@ -8,6 +8,7 @@ from GrADim.GrADim import Gradim
 # Run using """python -m pytest tests/test_forward_mode.py"""
 class TestForwardMode:
     X = ForwardMode(2)
+    X1 = ForwardMode(0)
     X2 = ForwardMode(-1)
     multiple_X = ForwardMode(np.array([1, 2, 3]))
 
@@ -87,16 +88,6 @@ class TestForwardMode:
         assert Y2.value == 2
         assert (Y2.derivative == np.array([-2,1,0])).all()
 
-    def test_abs(self):
-        Y = Gradim.abs(self.X)
-        assert Y.value == 2
-        assert Y.derivative == 1
-
-    def test_abs_neg(self):
-        Y = Gradim.abs(self.X2)
-        assert Y.value == 1
-        assert Y.derivative == -1
-
     def test_sqrt(self):
         Y =  Gradim.sqrt(self.X)
         assert Y.value == 2 ** 0.5
@@ -141,11 +132,6 @@ class TestForwardMode:
         Y = Gradim.log(self.X)
         assert Y.value == np.log(2)
         assert Y.derivative == 1/2
-
-    def test_abs(self):
-        Y = Gradim.abs(self.X)
-        assert Y.value == 2
-        assert Y.derivative == 1
     
     def test_arcsin(self):
         self.X = ForwardMode(.5)
@@ -206,17 +192,10 @@ class TestForwardMode:
         assert Y.value == np.sin(2)** .2 - np.cos(2)** 3
         assert Y.derivative == .2*(np.sin(2)**(-.8))*np.cos(2) + 3 * np.cos(2)** 2 * np.sin(2)
 
-    def test_inverse(self):
-        Y = 1/self.X + 2/(self.X**2)
-        assert Y.value == 1
-        assert Y.derivative == -3/4
-
-    def test_log_abs(self):
-        X = ForwardMode(-2)
-        Y = -3 * Gradim.log( 7 * Gradim.abs(self.X) )
-        assert Y.value == -3* np.log(14)
-        assert Y.derivative == -3/2
-
+    def test_inverse_log(self):
+        Y = 1/Gradim.log(self.X) + 2/(self.X**2)
+        assert Y.value == 1/np.log(2) + .5
+        assert Y.derivative == -.5*np.log(2)**(-2)-.5
 
     def test_function_multiple_inputs(self):
         def function_multiple_inputs(x):
@@ -241,7 +220,3 @@ class TestForwardMode:
         Y = function_multiple_inputs_and_outputs(self.multiple_X)
         assert (Y.value == np.array([13, -2])).all()
         assert (Y.derivative == np.array([[1,6,4], [1,0,-1]])).all()
-
-
-if __name__=="__main__":
-	print("")
