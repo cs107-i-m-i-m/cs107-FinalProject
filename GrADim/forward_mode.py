@@ -1,6 +1,6 @@
 import numpy as np
 
-from GrADim import Gradim
+from GrADim.GrADim import Gradim
 
 class ForwardMode(Gradim):
     
@@ -36,7 +36,7 @@ class ForwardMode(Gradim):
     def __rsub__(self, other):
         if type(other) != self.__class__:
             return ForwardMode(other - self.value, - self.derivative)
-        return ForwardMode(other.value - self.value, other.derivative - self.derivative)
+        #return ForwardMode(other.value - self.value, other.derivative - self.derivative)
 
     def __mul__(self, other):
         if type(other) != self.__class__:
@@ -57,13 +57,7 @@ class ForwardMode(Gradim):
     def __rtruediv__(self, other):
         if type(other) != self.__class__:
             return ForwardMode(other / self.value, - other * self.derivative / self.value**2)
-        return ForwardMode(other.value / self.value, (self.value * other.derivative - self.derivative * other.value) / self.value ** 2)
-    
-    def abs(self): #does the absolute affect the derivative too??
-        if self.value == 0:
-            raise ValueError("Cannot take derivative of abs at 0")
-        der = 1 *(self.value > 0) -1 * (self.value < 0)
-        return ForwardMode(np.abs(self.value), self.derivative  * der)
+        #return ForwardMode(other.value / self.value, (self.value * other.derivative - self.derivative * other.value) / self.value ** 2)
     
     def sqrt(self):
         return self**0.5
@@ -113,7 +107,7 @@ class ForwardMode(Gradim):
 
     def arctan(self):
         return ForwardMode(np.arctan(self.value), self.derivative * (1/(1 + self.value**2)))
-
+    '''
     @staticmethod
     def Newton_Raphson(fun,x0,eps,epochs):
         xn = x0
@@ -128,7 +122,6 @@ class ForwardMode(Gradim):
                 
         print("Max epochs reached, the closest root value is: ", xn)
         return xn
-
 
 
 if __name__ == "__main__":
@@ -155,13 +148,14 @@ if __name__ == "__main__":
     # def f2(x):
     #     return x
     #
-    # def f3(x):
-    #     return ForwardMode.exp(ForwardMode.sin(x))**0.2 + 2 * ForwardMode.sin(x) * ForwardMode.cos(x)
-    #
-    # ForwardMode.Newton_Raphson(f1,1.4,0.01,100)
-    # ForwardMode.Newton_Raphson(f2,1.4,0.01,100)
-    # ForwardMode.Newton_Raphson(f3,1.4,0.01,100)
-
+    
+    def f3(x):
+        return ForwardMode.exp(ForwardMode.sin(x))**0.2 + 2 * ForwardMode.sin(x) * ForwardMode.cos(x)
+    
+    ForwardMode.Newton_Raphson(f1,1.4,0.01,100)
+    ForwardMode.Newton_Raphson(f2,1.4,0.01,100)
+    ForwardMode.Newton_Raphson(f3,1.4,0.01,100)
+    
     multiple_X = ForwardMode(np.array([1, 2, 3]))
 
     def function_multiple_inputs(x):
@@ -184,4 +178,4 @@ if __name__ == "__main__":
     print(Y2.derivative)
     print(Y3.value)
     print(Y3.derivative)
-
+    '''

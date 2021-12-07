@@ -1,8 +1,5 @@
 class Gradim:
     
-    def abs(self): 
-        return self.__class__.abs(self)
-    
     def sqrt(self):
         return self.__class__.sqrt(self)
         
@@ -32,18 +29,19 @@ class Gradim:
     
     def arcsin(self):
         return self.__class__.arcsin(self)
-    
+    '''
     def arccosec(self):
         return self.__class__.arccosec(self)
-    
+    '''
     def arccos(self):
         return self.__class__.arccos(self)
-    
+    '''
     def arcsec(self):
         return self.__class__.arcsec(self)
-    
+    '''
     def arctan(self):
         return self.__class__.arctan(self)
-    
+    '''
     def arccot(self):
         return self.__class__.arccot(self)
+    '''
