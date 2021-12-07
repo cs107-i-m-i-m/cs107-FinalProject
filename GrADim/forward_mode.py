@@ -49,13 +49,12 @@ class ForwardMode(Gradim):
     def __pow__(self, power, modulo=None):
         if type(power) != self.__class__:
             return ForwardMode(self.value ** power, power * self.derivative * self.value ** (power-1))
-        
         return ForwardMode(self.value ** power.value, self.value**power.value * (power.derivative * np.log(self.value) + power.value/self.value*self.derivative) )
     
     def __rpow__(self, other, modulo=None):
         if type(other) != self.__class__:
             return ForwardMode(other ** self.value, (other ** self.value) * np.log(other)*self.derivative)
-        return other.__pow__(self)
+        #return other.__pow__(self)
 
     def __truediv__(self, other):
         if type(other) != self.__class__:
@@ -91,13 +90,13 @@ class ForwardMode(Gradim):
     def cot(self):
         return 1 / Gradim.tan(self)
     
-    def log(self, base = e):
+    def log(self, base = np.exp(1)):
         if type(base) != self.__class__:
             return ForwardMode(np.log(self.value)/np.log(base), self.derivative * (1/self.value)/np.log(base))
         return ForwardMode(np.log(self.value)/np.log(base.value), self.derivative * (1/self.value)/np.log(base.value) - base.derivative*(1/base.value)/np.log(base.value)**2)
     
     def ln(self):
-        return self.log(self)
+        return Gradim.log(self)
 
     def __eq__(self, other):
         if type(other) != self.__class__:
@@ -130,16 +129,16 @@ class ForwardMode(Gradim):
         return (self.value >= other.value)
     
     def sinh(self):
-        return (self.exp(self) - self.exp(-self))/2
+        return (Gradim.exp(self) - Gradim.exp(-self))/2
     
     def cosh(self):
-        return (self.exp(self) + self.exp(-self))/2
+        return (Gradim.exp(self) + Gradim.exp(-self))/2
     
     def tanh(self):
-        return (self.exp(self) - self.exp(-self))/(self.exp(self) + self.exp(-self))
+        return (Gradim.exp(self) - Gradim.exp(-self))/(Gradim.exp(self) + Gradim.exp(-self))
     
     def logistic(self):
-        return 1/(1+self.exp(-self))
+        return 1/(1+Gradim.exp(-self))
         
     @staticmethod
     def multiple_outputs(func):
