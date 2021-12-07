@@ -27,6 +27,9 @@ class Gradim:
     def log(self):
         return self.__class__.log(self)
     
+    def ln(self):
+        return self.__class__.ln(self)
+    
     def arcsin(self):
         return self.__class__.arcsin(self)
     '''
@@ -45,3 +48,14 @@ class Gradim:
     def arccot(self):
         return self.__class__.arccot(self)
     '''
+    def sinh(self):
+        return self.__class__.sinh(self)
+    
+    def cosh(self):
+        return self.__class__.cosh(self)
+    
+    def tanh(self):
+        return self.__class__.tanh(self)
+    
+    def logistic(self):
+        return self.__class__.logistic(self)
