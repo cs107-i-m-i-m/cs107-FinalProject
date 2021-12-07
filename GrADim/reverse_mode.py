@@ -1,6 +1,6 @@
 import numpy as np
 
-from GrADim import Gradim
+from GrADim.GrADim import Gradim
 
 class ReverseMode(Gradim):
     def __init__(self, value):
