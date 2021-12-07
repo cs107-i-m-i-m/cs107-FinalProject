@@ -1,20 +1,22 @@
 import numpy as np
 
-from GrADim.GrADim import Gradim
+from GrADim import Gradim
 
 class ForwardMode(Gradim):
     
     #Initialize the value and derivative, if the derivative is not provided set it to 1. (Essentailly dual number Value + e derivative)
-    def __init__(self, value, derivative=1): 
+    def __init__(self, value, derivative=None):
         self.value = value
-        self.derivative = derivative
-        
-    #For a single valued function, Jacobian is the derivative    
-    def __Jacobian__(self): 
-        return self.derivative
-    
-    #Check if the other object to add is a similar class object or just a constant, and handle them appropiately
-    
+        if derivative is not None:
+            self.derivative = derivative
+        else:
+            self.derivative = np.ones(value.shape) if type(value) == np.ndarray else 1
+
+    def __getitem__(self, item):
+        new_derivative = np.zeros(self.derivative.shape)
+        new_derivative[item] = self.derivative[item]
+        return ForwardMode(self.value[item], new_derivative)
+
     def __add__(self, other):
         if type(other) != self.__class__:
             return ForwardMode(self.value + other, self.derivative)
@@ -89,6 +91,19 @@ class ForwardMode(Gradim):
     
     def log(self):
         return ForwardMode(np.log(self.value), self.derivative * (1/self.value))
+
+    @staticmethod
+    def multiple_outputs(func):
+        """
+        Just applying func to a ForwardMode object would give an array of ForwardMode objects.
+        This function transforms this array into one single ForwardMode object
+        """
+        def wrapper(*args, **kwargs):
+            Y = func(*args, **kwargs)
+            Y_values = np.array([y.value for y in Y])
+            Y_derivatives = np.array([y.derivative for y in Y])
+            return ForwardMode(Y_values, Y_derivatives)
+        return wrapper
     
     '''
     def arcsin(self):
@@ -123,36 +138,61 @@ class ForwardMode(Gradim):
                 
         print("Max epochs reached, the closest root value is: ", xn)
         return xn
+'''
+
+
 
 if __name__ == "__main__":
     X = ForwardMode(2)
-    def f(x):
-        return x**2 - 2
-    
+    # def f(x):
+    #     return x**2 - 2
+    #
+    #
+    # def g(x):
+    #     return ForwardMode.exp(ForwardMode.sin(x))**0.2 + 2 * ForwardMode.sin(x) * ForwardMode.cos(x)
+    #
+    # Y = f(X)
+    # print(Y.value)
+    # print(Y.derivative)
+    #
+    # Y2 = g(X)
+    # print(Y2.value)
+    # print(Y2.derivative)
+    #
+    #
+    # def f1(x):
+    #     return x**2 - 2*x + 1
+    #
+    # def f2(x):
+    #     return x
+    #
+    # def f3(x):
+    #     return ForwardMode.exp(ForwardMode.sin(x))**0.2 + 2 * ForwardMode.sin(x) * ForwardMode.cos(x)
+    #
+    # ForwardMode.Newton_Raphson(f1,1.4,0.01,100)
+    # ForwardMode.Newton_Raphson(f2,1.4,0.01,100)
+    # ForwardMode.Newton_Raphson(f3,1.4,0.01,100)
 
-    def g(x):
-        return ForwardMode.exp(ForwardMode.sin(x))**0.2 + 2 * ForwardMode.sin(x) * ForwardMode.cos(x)
+    multiple_X = ForwardMode(np.array([1, 2, 3]))
 
-    Y = f(X)
-    print(Y.value)
-    print(Y.derivative)
+    def function_multiple_inputs(x):
+        return Gradim.cos(x[0]) + Gradim.exp(x[2])*x[1]
 
-    Y2 = g(X)
+    @ForwardMode.multiple_outputs
+    def function_multiple_outputs(x):
+        return 3*x, Gradim.sin(x), Gradim.sqrt(x)
+
+    @ForwardMode.multiple_outputs
+    def function_multiple_inputs_and_outputs(x):
+        return x[0] + 2*x[1] * x[2], x[0] - x[2]
+
+    Y1 = function_multiple_inputs(multiple_X)
+    Y2 = function_multiple_outputs(X)
+    Y3 = function_multiple_inputs_and_outputs(multiple_X)
+    print(Y1.value)
+    print(Y1.derivative)
     print(Y2.value)
     print(Y2.derivative)
-    
+    print(Y3.value)
+    print(Y3.derivative)
 
-    def f1(x):
-        return x**2 - 2*x + 1
-    
-    def f2(x):
-        return x
-    
-    def f3(x):
-        return ForwardMode.exp(ForwardMode.sin(x))**0.2 + 2 * ForwardMode.sin(x) * ForwardMode.cos(x)
-        
-    ForwardMode.Newton_Raphson(f1,1.4,0.01,100)
-    ForwardMode.Newton_Raphson(f2,1.4,0.01,100)
-    ForwardMode.Newton_Raphson(f3,1.4,0.01,100)
-            
-'''        
