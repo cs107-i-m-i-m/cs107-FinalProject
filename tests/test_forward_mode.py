@@ -8,10 +8,10 @@ from GrADim.GrADim import Gradim
 # Run using """python -m pytest tests/test_forward_mode.py"""
 class TestForwardMode:
     X = ForwardMode(2)
-    X1 = ForwardMode(0)
-    X2 = ForwardMode(-1)
+    X1 = ForwardMode(2)
+    X2 = ForwardMode(0)
+    multiple_X0 = ForwardMode(np.array([3, 2]))
     multiple_X = ForwardMode(np.array([1, 2, 3]))
-
     float_equality_threshold = 1e-8
 
     def test_init(self):
@@ -64,6 +64,25 @@ class TestForwardMode:
         Y = self.X ** 4
         assert Y.value == 16
         assert Y.derivative == 32
+
+    def test_pow_both(self):
+        def function_multiple_inputs(x):
+            return x[0]**x[1]
+        Y = function_multiple_inputs(self.multiple_X0)
+        assert Y.value == 9
+        assert (Y.derivative == np.array([6,9*np.log(3)])).all()
+
+    def test_rpow(self):
+        Y = 2**self.X
+        assert Y.value == 4
+        assert Y.derivative == 4*np.log(2)
+
+    def test_rpow_both(self):
+        def function_multiple_inputs(x):
+            return x[0]**x[1]
+        Y = function_multiple_inputs(self.multiple_X0)
+        assert Y.value == 9
+        assert (Y.derivative == np.array([6,9*np.log(3)])).all()
 
     def test_truediv_left(self):
         Y = self.X / 4
@@ -122,22 +141,92 @@ class TestForwardMode:
         assert Y.value == 1 / np.tan(2)
         assert Y.derivative == -1 * (1 /np.sin(2)) ** 2
 
-    def test_log(self):
-        Y = Gradim.log(self.X)
+    def test_ln(self):
+        Y = Gradim.ln(self.X)
         assert Y.value == np.log(2)
         assert Y.derivative == 1/2
+
+    def test_log(self):
+        Y = Gradim.log(self.X,base=2)
+        assert Y.value == 1
+        assert Y.derivative == 1/(2*np.log(2))
+    '''
+    def test_log_both(self):
+        def function_multiple_inputs(x):
+            return Gradim.log(x[0],base=x[1])
+        Y = function_multiple_inputs(self.multiple_X0)
+        assert Y.value == np.log(3)/np.log(2)
+        assert (Y.derivative == np.array([-.5/np.log(2),.5/np.log(2)])).all()
+    '''
+    def test_eq(self):
+        assert self.X == self.X1
+        assert self.X == 2
+        assert 2 == self.X
+
+    def test_ne(self):
+        assert self.X != self.X2
+        assert self.X2 != 2
+        assert 2 != self.X2
+
+    def test_lt(self):
+        assert self.X2 < self.X
+        assert self.X < 3
+        assert -1 < self.X2
+        
+    def test_gt(self):
+        assert self.X > self.X2
+        assert self.X2 > -1
+        assert 2 > self.X2
+
+    def test_le(self):
+        assert self.X1 <= self.X
+        assert self.X2 <= self.X
+        assert -1 <= self.X2
+        assert 0 <= self.X2
+        assert self.X2 <= 0
+        assert self.X2 <= 4
+        
+    def test_ge(self):
+        assert self.X >= self.X2
+        assert self.X2 >= -1
+        assert 0 >= self.X2
+        assert self.X >= self.X1
+        assert self.X2 >= 0
+        assert 4 >= self.X2
+
+    def test_sinh(self):
+        Y = Gradim.sinh(self.X)
+        assert Y.value == (np.exp(2)-np.exp(-2))/2
+        assert Y.derivative == (np.exp(2)+np.exp(-2))/2
+        
+    def test_cosh(self):
+        Y = Gradim.cosh(self.X) 
+        assert Y.value == (np.exp(2)+np.exp(-2))/2
+        assert Y.derivative == (np.exp(2)-np.exp(-2))/2
+        
+    def test_tanh(self):
+        Y = Gradim.tanh(self.X)
+        assert Y.value == (np.exp(2)-np.exp(-2))/(np.exp(2)+np.exp(-2))
+        assert np.abs(Y.derivative - 4*(np.exp(2)+np.exp(-2))**(-2)) < self.float_equality_threshold
+
+    def test_logistic(self):
+        Y = Gradim.logistic(self.X)
+        assert Y.value == 1/(1+np.exp(-2))
+        assert Y.derivative == (1+np.exp(-2))**(-2)*np.exp(-2)
     
     def test_arcsin(self):
         self.X = ForwardMode(.5)
         Y = Gradim.arcsin(self.X)
         assert Y.value == np.arcsin(.5)
         assert Y.derivative == 1 / np.sqrt(1 - .5 ** 2)
+        
     '''
     def test_arccosec(self):
         Y = Gradim.arccosec(self.X)
         assert Y.value == np.arcsin(1/2)
         assert Y.derivative == (-1 / np.sqrt(2 **2 - 1)) * 1/np.abs(2)
     '''
+    
     def test_arccos(self):
         self.X = ForwardMode(.5)
         Y = Gradim.arccos(self.X)

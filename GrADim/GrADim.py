@@ -1,3 +1,5 @@
+import numpy as np
+
 class Gradim:
     
     def sqrt(self):
@@ -24,8 +26,8 @@ class Gradim:
     def cot(self):
         return self.__class__.cot(self)
     
-    def log(self):
-        return self.__class__.log(self)
+    def log(self, base=np.exp(1)):
+        return self.__class__.log(self, base)
     
     def ln(self):
         return self.__class__.ln(self)
