@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
-# Run test files
-coverage run -m pytest tests/test_forward_mode.py test_reverse_mode.py
+pip install coverage
 
-# Run the code coverage on both
-coverage report -m
+# Run test files
+coverage run -m pytest tests/
+
+# Run the code coverage
+coverage html
