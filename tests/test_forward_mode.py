@@ -150,14 +150,7 @@ class TestForwardMode:
         Y = Gradim.log(self.X,base=2)
         assert Y.value == 1
         assert Y.derivative == 1/(2*np.log(2))
-    '''
-    def test_log_both(self):
-        def function_multiple_inputs(x):
-            return Gradim.log(x[0],base=x[1])
-        Y = function_multiple_inputs(self.multiple_X0)
-        assert Y.value == np.log(3)/np.log(2)
-        assert (Y.derivative == np.array([-.5/np.log(2),.5/np.log(2)])).all()
-    '''
+
     def test_eq(self):
         assert self.X == self.X1
         assert self.X == 2
@@ -218,15 +211,13 @@ class TestForwardMode:
         self.X = ForwardMode(.5)
         Y = Gradim.arcsin(self.X)
         assert Y.value == np.arcsin(.5)
-        assert Y.derivative == 1 / np.sqrt(1 - .5 ** 2)
-        
+        assert Y.derivative == 1 / np.sqrt(1 - .5 ** 2)  
     '''
     def test_arccosec(self):
         Y = Gradim.arccosec(self.X)
         assert Y.value == np.arcsin(1/2)
         assert Y.derivative == (-1 / np.sqrt(2 **2 - 1)) * 1/np.abs(2)
     '''
-    
     def test_arccos(self):
         self.X = ForwardMode(.5)
         Y = Gradim.arccos(self.X)
