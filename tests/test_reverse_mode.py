@@ -66,12 +66,16 @@ class TestReverseMode:
         g = x ** 2
         assert (float(g.value) == 9.0) & (float(x.derivative) == 6.0)
 
-    # TODO Uncomment when function power is finished
-    # def test_power_v(self):
-    #     x = ReverseMode(3)
-    #     y = ReverseMode(2)
-    #     g = x ** y
-    #     assert (float(g.value) == 9.0) & (float(x.derivative) == 6.0) & (float(y.derivative) == np.log(3.0)*9.0)
+    def test_power_v(self):
+        x = ReverseMode(3)
+        y = ReverseMode(2)
+        g = x ** y
+        assert (float(g.value) == 9.0) & (float(x.derivative) == 6.0) & (float(y.derivative) == np.log(3.0)*9.0)
+
+    def test_rpower_c(self):
+        x = ReverseMode(3)
+        g = 2**x
+        assert (g.value == 8) & (x.derivative == np.log(2)*8)
 
     def test_division_c(self):
         x = ReverseMode(3)
@@ -88,6 +92,56 @@ class TestReverseMode:
         x = ReverseMode(3)
         g = 2 / x
         assert (float(g.value) == (2/3)) & (float(x.derivative) ==  -(2/9))
+
+    def test_eq(self):
+        x = ReverseMode(3)
+        x1 = ReverseMode(3)
+        assert x == x1
+        assert x == 3
+        assert 3 == x
+
+    def test_ne(self):
+        x = ReverseMode(3)
+        x1 = ReverseMode(2)
+        assert x != x1
+        assert x != 2
+        assert 2 != x
+
+    def test_lt(self):
+        x = ReverseMode(3)
+        x1 = ReverseMode(2)
+        assert x1 < x
+        assert x1 < 3
+        assert -1 < x1
+
+    def test_gt(self):
+        x = ReverseMode(3)
+        x1 = ReverseMode(2)
+        assert x > x1
+        assert x1 > -1
+        assert 3 > x1
+
+    def test_le(self):
+        x = ReverseMode(3)
+        x1 = ReverseMode(3)
+        x2 = ReverseMode(2)
+        assert x2 <= x
+        assert x1 <= x
+        assert -1 <= x
+        assert 3 <= x
+        assert x <= 3
+        assert x <= 4
+
+    def test_ge(self):
+        x = ReverseMode(3)
+        x1 = ReverseMode(3)
+        x2 = ReverseMode(2)
+        assert x >= x2
+        assert x >= x1
+        assert 4 >= x
+        assert 3 >= x
+        assert x >= 2
+        assert x >= 3
 
     def test_sqrt_c(self):
         x = ReverseMode(3)
@@ -129,10 +183,15 @@ class TestReverseMode:
         g = Gradim.cot(x)
         assert (float(g.value) == 1/np.tan(3)) & (np.abs(float(x.derivative) + 1 * (1 /np.sin(3)) ** 2) < self.float_equality_threshold)
 
-    def test_log(self):
+    def test_ln(self):
         x = ReverseMode(3)
-        g = Gradim.log(x)
+        g = Gradim.ln(x)
         assert (float(g.value) == np.log(3)) & (float(x.derivative) == 1/3)
+
+    def test_log(self):
+        x = ReverseMode(2)
+        g = Gradim.log(x, base=2)
+        assert (float(g.value) == 1) & (float(x.derivative) == 1/(2*np.log(2)))
 
     def test_arcsin(self):
         x = ReverseMode(.5)
@@ -148,3 +207,23 @@ class TestReverseMode:
         x = ReverseMode(.5)
         g = Gradim.arctan(x)
         assert (float(g.value) == np.arctan(.5)) & (float(x.derivative) ==  1 / (1 + .5 ** 2))
+
+    def test_sinh(self):
+        x = ReverseMode(3)
+        g = Gradim.sinh(x)
+        assert (g.value == (np.exp(3) - np.exp(-3)) / 2) & (x.derivative == (np.exp(3) + np.exp(-3)) / 2)
+
+    def test_cosh(self):
+        x = ReverseMode(3)
+        g = Gradim.cosh(x)
+        assert (g.value == (np.exp(3) + np.exp(-3)) / 2) & (x.derivative == (np.exp(3) - np.exp(-3)) / 2)
+
+    def test_tanh(self):
+        x = ReverseMode(3)
+        g = Gradim.tanh(x)
+        assert (g.value == (np.exp(3) - np.exp(-3)) / (np.exp(3) + np.exp(-3))) & (np.abs(x.derivative - 4 * (np.exp(3) + np.exp(-3)) ** (-2)) < self.float_equality_threshold)
+
+    def test_logistic(self):
+        x = ReverseMode(3)
+        g = Gradim.logistic(x)
+        assert (g.value == 1/(1+np.exp(-3))) & (x.derivative == (1+np.exp(-3))**(-2)*np.exp(-3))

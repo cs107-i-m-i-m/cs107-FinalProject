@@ -46,8 +46,18 @@ class ReverseMode(Gradim):
         return self.__mul__(other)
 
     def __pow__(self, power, modulo=None):
-        new = ReverseMode(self.value ** power)
-        self.children.append((power * self.value ** (power - 1), new))
+        if type(power) != self.__class__:
+            new = ReverseMode(self.value ** power)
+            self.children.append((power * self.value ** (power - 1), new))
+        else:
+            new = ReverseMode(self.value ** power.value)
+            self.children.append((power.value * self.value ** (power.value - 1), new))
+            power.children.append((np.log(self.value) * self.value ** power.value, new))
+        return new
+
+    def __rpow__(self, other, modulo=None):
+        new = ReverseMode(other ** self.value)
+        self.children.append((np.log(other) * other ** self.value, new))
         return new
 
     def __truediv__(self, other):
@@ -61,14 +71,39 @@ class ReverseMode(Gradim):
         return new
 
     def __rtruediv__(self, other):
-        if type(other) != self.__class__:
-            new = ReverseMode(other/self.value)
-            self.children.append((-other/self.value**2, new))
-        else:
-            new = ReverseMode(other.value/self.value)
-            other.children.append((1/self.value, new))
-            self.children.append((- other.value/self.value**2, new))
+        new = ReverseMode(other/self.value)
+        self.children.append((-other/self.value**2, new))
         return new
+
+    def __eq__(self, other):
+        if type(other) != self.__class__:
+            return (self.value == other)
+        return (self.value == other.value)
+
+    def __ne__(self, other):
+        if type(other) != self.__class__:
+            return (self.value != other)
+        return (self.value != other.value)
+
+    def __lt__(self, other):
+        if type(other) != self.__class__:
+            return (self.value < other)
+        return (self.value < other.value)
+
+    def __gt__(self, other):
+        if type(other) != self.__class__:
+            return (self.value > other)
+        return (self.value > other.value)
+
+    def __le__(self, other):
+        if type(other) != self.__class__:
+            return (self.value <= other)
+        return (self.value <= other.value)
+
+    def __ge__(self, other):
+        if type(other) != self.__class__:
+            return (self.value >= other)
+        return (self.value >= other.value)
 
     @property
     def derivative(self):
@@ -108,9 +143,12 @@ class ReverseMode(Gradim):
     def cot(self):
         return 1/Gradim.tan(self)
 
-    def log(self):
-        new = ReverseMode(np.log(self.value))
-        self.children.append((1/self.value, new))
+    def ln(self):
+        return Gradim.log(self)
+
+    def log(self, base=np.exp(1)):
+        new = ReverseMode(np.log(self.value)/np.log(base))
+        self.children.append((1/(self.value * np.log(base)), new))
         return new
 
     def arcsin(self):
@@ -128,12 +166,14 @@ class ReverseMode(Gradim):
         self.children.append((1/(1 + self.value**2), new))
         return new
 
+    def sinh(self):
+        return (Gradim.exp(self) - Gradim.exp(-self)) / 2
 
-if __name__ == "__main__":
-    X = ReverseMode(.5)
+    def cosh(self):
+        return (Gradim.exp(self) + Gradim.exp(-self)) / 2
 
-    def g(x):
-        return Gradim.arcsin(x) + Gradim.arccos(x) + Gradim.arctan(x)
+    def tanh(self):
+        return (Gradim.exp(self) - Gradim.exp(-self)) / (Gradim.exp(self) + Gradim.exp(-self))
 
-    print(g(X).value)
-    print(X.derivative)
+    def logistic(self):
+        return 1 / (1 + Gradim.exp(-self))
