@@ -227,3 +227,8 @@ class TestReverseMode:
         x = ReverseMode(3)
         g = Gradim.logistic(x)
         assert (g.value == 1/(1+np.exp(-3))) & (x.derivative == (1+np.exp(-3))**(-2)*np.exp(-3))
+
+    def test_complex_function_with_seed(self):
+        x = ReverseMode(3, derivative=2)
+        g = x * Gradim.sin(x)
+        assert (g.value == 3*np.sin(3)) & (x.derivative == 2 * np.sin(3) + 2 * 3 * np.cos(3))
