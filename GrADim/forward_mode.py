@@ -93,7 +93,7 @@ class ForwardMode(Gradim):
     def log(self, base = np.exp(1)):
         if type(base) != self.__class__:
             return ForwardMode(np.log(self.value)/np.log(base), self.derivative * (1/self.value)/np.log(base))
-        #return ForwardMode(np.log(self.value)/np.log(base.value), self.derivative * (1/self.value)/np.log(base.value) - base.derivative*(1/base.value)/np.log(base.value)**2)
+        return ForwardMode(np.log(self.value)/np.log(base.value), self.derivative * (1/self.value)/np.log(base.value) - base.derivative*(1/base.value)/np.log(base.value)**2)
     
     def ln(self):
         return Gradim.log(self)
