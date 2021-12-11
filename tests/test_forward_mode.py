@@ -146,11 +146,6 @@ class TestForwardMode:
         assert Y.value == np.log(2)
         assert Y.derivative == 1/2
 
-    def test_log_base(self):
-        Y = Gradim.log(ForwardMode(2),base=self.X)
-        assert Y.value == 1
-        assert Y.derivative == -1/(2*np.log(2))
-
     def test_eq(self):
         assert self.X == self.X1
         assert self.X == 2
