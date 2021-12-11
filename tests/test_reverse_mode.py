@@ -232,3 +232,24 @@ class TestReverseMode:
         x = ReverseMode(3, derivative=2)
         g = x * Gradim.sin(x)
         assert (g.value == 3*np.sin(3)) & (x.derivative == 2 * np.sin(3) + 2 * 3 * np.cos(3))
+
+    def test_multiple_inputs_function(self):
+        x = ReverseMode(np.array([2, 3]))
+        g = x[0] + 2*x[1]
+        assert (g.value == 8) & ((x.derivative == np.array([1, 2])).all())
+
+    def test_multiple_outputs_function(self):
+        x = ReverseMode(3)
+        @ReverseMode.multiple_outputs
+        def f(x):
+            return 2*x, x+3
+        g = f(x)
+        assert ((g.value == np.array([6, 6])).all()) & ((x.derivative == np.array([2, 1])).all())
+
+    def test_multiple_inputs_and_outputs_function(self):
+        x = ReverseMode(np.array([2, 3]))
+        @ReverseMode.multiple_outputs
+        def f(x):
+            return x[0] + x[1], x[0] * x[1]
+        g = f(x)
+        assert ((g.value == np.array([5, 6])).all()) & ((x.derivative == np.array([[1, 1], [3, 2]])).all())
